@@ -1,0 +1,20 @@
+.bucket {
+  color: white;
+  font-size: 20px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  .bucket-badge {
+    position: absolute;
+    background: red;
+    border-radius: 15px;
+    padding: 1px 5px;
+    font-size: 10px;
+    top: -4px;
+    right: -6px;
+  }
+}
+
+.exit {
+  cursor: pointer;
+}

@@ -1,0 +1,60 @@
+<div class="header bg-gradient-purple pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+    <div class="header-body">
+      <!-- Card stats -->
+      <div class="row mt-5" *ngIf="trains">
+        <div class="col">
+          <div class="card shadow">
+            <div class="card-header border-0">
+              <h3 class="mb-0">Vous avez {{trains?.length}} éléments dans votre panier</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                <tr>
+                  <th scope="col">Compagnie</th>
+                  <th scope="col">Date de départ</th>
+                  <th scope="col">Gare de départ</th>
+                  <th scope="col">Gare d'arrivée</th>
+                  <th scope="col">Classe</th>
+                  <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody *ngIf="trains?.length">
+                <tr *ngFor="let train of trains; let index = index">
+                  <th scope="row">
+                    <div class="media align-items-center">
+                      <div href="javascript:void(0)" class="avatar mr-3">
+                        <img alt="Image placeholder"
+                             [src]="'/assets/img/theme/' + (train?.company === 'SNCF' ? 'SNCF': 'RENFE') + '.png'">
+                      </div>
+                    </div>
+                  </th>
+                  <td class="font-weight-bold">
+                    {{train?.departureDate | date: 'dd/MM/yyyy HH:mm'}}
+                  </td>
+                  <td class="font-weight-bold">
+                    {{train?.departure?.toUpperCase()}}
+                  </td>
+                  <td class="font-weight-bold">
+                    {{train?.arrival?.toUpperCase()}}
+                  </td>
+                  <td>
+                    {{train?.classe?.toUpperCase()}}
+                  </td>
+                  <td>
+                    <button class="btn btn-danger" (click)="deleteTrainFromList(index)">Supprimer le ticket</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="card-footer py-4 text-right" *ngIf="trains?.length">
+              <button type="action" (click)="submitReservations()" class="btn btn-info">Valider réservations</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

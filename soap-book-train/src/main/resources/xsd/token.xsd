@@ -1,0 +1,38 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.web-service-train-ensiie.com/schema/token"
+           elementFormDefault="qualified">
+
+    <xs:element name="GetJWTTokenRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="mail" type="xs:string"/>
+                <xs:element name="password" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetJWTTokenResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="JWTtoken" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CheckJWTTokenRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="JWTtoken" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CheckJWTTokenResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="valid" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

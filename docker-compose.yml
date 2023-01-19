@@ -1,0 +1,117 @@
+version: '3.7'
+services:
+  trainvago:
+    container_name: trainvago
+    image: trainvago:1.0.0
+    restart: always
+    ports:
+      - published: 4200
+        target: 80
+    depends_on:
+      - sncf_api
+    networks:
+      - train_network
+  service_soap:
+    container_name: service_soap
+    image: soap-book-train:1.0.0
+    restart: always
+    ports:
+      - published: ${SOAP_PORT}
+        target: 8080
+    environment:
+      SPRING_POSTGRES_DB: ${POSTGRES_DB}
+      SPRING_POSTGRES_HOST: ${POSTGRES_BOOK_CONTAINER_NAME}
+      SPRING_POSTGRES_USER: ${POSTGRES_USER}
+      SPRING_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_SNCF_CONTAINER: ${SNCF_CONTAINER_NAME}
+      SPRING_LA_RENFE_SNCF_CONTAINER: ${LA_RENFE_CONTAINER_NAME}
+    depends_on:
+      - sncf_api
+    networks:
+      - train_network
+  sncf_api:
+    container_name: ${SNCF_CONTAINER_NAME}
+    image: rest-filter-train:1.0.0
+    restart: always
+    ports:
+      - published: 8082
+        target: 8080
+    environment:
+      SPRING_POSTGRES_DB: ${POSTGRES_DB}
+      SPRING_POSTGRES_HOST: ${POSTGRES_SNCF_CONTAINER_NAME}
+      SPRING_POSTGRES_USER: ${POSTGRES_USER}
+      SPRING_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - sncf_postgres
+    networks:
+      - train_network
+  la_renfe_api:
+    container_name: ${LA_RENFE_CONTAINER_NAME}
+    image: rest-filter-train:1.0.0
+    restart: always
+    ports:
+      - published: 8083
+        target: 8080
+    environment:
+      SPRING_POSTGRES_DB: ${POSTGRES_DB}
+      SPRING_POSTGRES_HOST: ${POSTGRES_LA_RENFE_CONTAINER_NAME}
+      SPRING_POSTGRES_USER: ${POSTGRES_USER}
+      SPRING_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - sncf_postgres
+    networks:
+      - train_network
+  sncf_postgres:
+    container_name: ${POSTGRES_SNCF_CONTAINER_NAME}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    image: postgres:latest
+    ports:
+      - published: 5444
+        target: 5432
+    restart: unless-stopped
+    networks:
+      - train_network
+    volumes:
+      - train_sncf_data:/var/lib/postgresql/data:rw
+      - ./sql/sncf_filter.sql:/docker-entrypoint-initdb.d/init.sql:rw
+  la_renfe_postgres:
+    container_name: ${POSTGRES_LA_RENFE_CONTAINER_NAME}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    image: postgres:latest
+    ports:
+      - published: 5450
+        target: 5432
+    restart: unless-stopped
+    networks:
+      - train_network
+    volumes:
+      - train_la_renfe_data:/var/lib/postgresql/data:rw
+      - ./sql/la_renfe_filter.sql:/docker-entrypoint-initdb.d/init.sql:rw
+  book_postgres:
+    container_name: ${POSTGRES_BOOK_CONTAINER_NAME}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+    image: postgres:latest
+    ports:
+      - published: 5441
+        target: 5432
+    restart: unless-stopped
+    networks:
+      - train_network
+    volumes:
+      - train_book_data:/var/lib/postgresql/data:rw
+      - ./sql/train_book.sql:/docker-entrypoint-initdb.d/init.sql:rw
+volumes:
+  train_sncf_data: { }
+  train_la_renfe_data: { }
+  train_book_data: { }
+networks:
+  train_network: { }

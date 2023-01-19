@@ -1,0 +1,33 @@
+<nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" routerLinkActive="active"
+       [routerLink]="['/search']">{{getTitle()}}</a>
+    <!-- User -->
+    <ul class="navbar-nav align-items-center d-none d-md-flex">
+      <li class="nav-item">
+        <a class="bucket" [routerLink]="['/bucket']">
+          <i class="ni ni-basket"></i>
+          <span class="bucket-badge" *ngIf="numberElementsInBucket() > 0">{{numberElementsInBucket()}}</span>
+        </a>
+      </li>
+      <li class="nav-item " placement="bottom-right" >
+        <div class="nav-link pr-0">
+          <div class="media align-items-center">
+            <i class="ni ni-circle-08"></i>
+            <div class="media-body ml-2 d-none d-lg-block">
+              <span class="mb-0 text-sm  font-weight-bold">{{profil}}</span>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item exit" placement="bottom-right" (click)="exit()">
+        <div class="nav-link pr-0">
+          <div class="media align-items-center">
+            <i class="ni ni-curved-next"></i>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>

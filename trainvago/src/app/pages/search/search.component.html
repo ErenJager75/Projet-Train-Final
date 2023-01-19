@@ -1,0 +1,153 @@
+<div class="header bg-gradient-blue pb-8 pt-5 pt-md-8">
+  <div class="container-fluid">
+    <div class="header-body">
+      <!-- Card stats -->
+      <div class="row">
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--7">
+
+  <div class="row mt-5">
+    <div class="col">
+      <div class="card shadow">
+        <form [formGroup]="searchForm" (submit)="validForm()">
+          <div class="card-header border-0">
+            <h3 class="mb-0">Critères de recherche</h3>
+            <span class="label-error" *ngIf="error">{{error}}</span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-departure">Ville de départ</label>
+                  <input type="text" id="input-departure" class="form-control form-control-alternative" formControlName="departure" placeholder="PARIS">
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-arrival" >Ville d'arrivée</label>
+                  <input type="text" id="input-arrival" class="form-control form-control-alternative" formControlName="arrival" placeholder="MARSEILLE">
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-departure-date" >Date de départ</label>
+                  <input type="date" id="input-departure-date" formControlName="departureDate" class="form-control form-control-alternative">
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-return" >Date de retour</label>
+                  <input type="date" id="input-return" formControlName="returnDate" class="form-control form-control-alternative">
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-classe">Classe</label>
+                  <select id="input-classe" class="form-control form-control-alternative" formControlName="classe">
+                    <option disabled selected value>-- Choisir une classe --</option>
+                    <option value="STANDARD">STANDARD</option>
+                    <option value="BUSINESS">BUSINESS</option>
+                    <option value="FIRST">FIRST</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <div class="form-group">
+                  <label class="form-control-label" for="input-return">Nombre de places</label>
+                  <input type="number" id="input-number-places" formControlName="numberPlacesWanted" class="form-control form-control-alternative" placeholder="1">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer py-4 text-right">
+            <button type="reset" class="btn btn-dark">Effacer</button>
+            <button type="submit" class="btn btn-info">Rechercher</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+  <!-- Table -->
+  <div class="row mt-5" *ngIf="trains">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Résultat de la recherche</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+            <tr>
+              <th scope="col">Compagnie</th>
+              <th scope="col">Date de départ</th>
+              <th scope="col">Gare de départ</th>
+              <th scope="col">Gare d'arrivée</th>
+              <th scope="col">Classe</th>
+              <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody *ngIf="trains?.length">
+            <tr *ngFor="let train of trains.slice(indexCurrentPage * 5, indexCurrentPage * 5 + 5)">
+              <th scope="row">
+                <div class="media align-items-center">
+                  <div href="javascript:void(0)" class="avatar mr-3">
+                    <img alt="Image placeholder"
+                         [src]="'/assets/img/theme/' + (train?.company === 'SNCF' ? 'SNCF': 'RENFE') + '.png'">
+                  </div>
+                </div>
+              </th>
+              <td class="font-weight-bold">
+                {{train?.departureDate | date: 'dd/MM/yyyy HH:mm'}}
+              </td>
+              <td class="font-weight-bold">
+                {{train?.departure?.toUpperCase()}}
+              </td>
+              <td class="font-weight-bold">
+                {{train?.arrival?.toUpperCase()}}
+              </td>
+              <td>
+                {{train?.classe?.toUpperCase()}}
+              </td>
+              <td class="text-right">
+                <button class="btn btn-info" [disabled]="isMaxReservation(train)" (click)="addToTrainList(train)">Ajouter un ticket</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer py-4" *ngIf="trains?.length">
+          <nav aria-label="...">
+            <ul class="pagination justify-content-end mb-0">
+              <li class="page-item" [class]="{'disabled': indexCurrentPage === 0}">
+                <a class="page-link" href="javascript:void(0)" tabindex="-1" (click)="changePage(indexCurrentPage - 1)">
+                  <i class="fas fa-angle-left"></i>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+              <li class="page-item" [class]="{'active': indexCurrentPage === 0}">
+                <a class="page-link" href="javascript:void(0)" (click)="changePage(0)">1</a></li>
+              <li class="page-item active" *ngIf="indexCurrentPage !== 0 && indexCurrentPage !== numberPages - 1">
+                <a class="page-link" href="javascript:void(0)"(click)="changePage(indexCurrentPage)" >{{indexCurrentPage + 1}} <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="page-item" *ngIf="numberPages > 1" [class]="{'active': indexCurrentPage === numberPages - 1}">
+                <a class="page-link" href="javascript:void(0)" (click)="changePage(numberPages - 1)">{{numberPages}}</a></li>
+              <li class="page-item" [class]="{'disabled': indexCurrentPage === numberPages - 1}">
+                <a class="page-link" href="javascript:void(0)" (click)="changePage(indexCurrentPage + 1)">
+                  <i class="fas fa-angle-right"></i>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

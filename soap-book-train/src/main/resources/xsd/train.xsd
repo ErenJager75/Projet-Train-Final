@@ -1,0 +1,121 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://www.web-service-train-ensiie.com/schema/train"
+           targetNamespace="http://www.web-service-train-ensiie.com/schema/train"
+           elementFormDefault="qualified">
+
+    <xs:element name="SearchTrainRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="departure" type="xs:string"/>
+                <xs:element name="arrival" type="xs:string"/>
+                <xs:element name="departureDate" type="xs:date"/>
+                <xs:element name="returnDate" type="xs:date"/>
+                <xs:element name="classe" type="tns:Classe"/>
+                <xs:element name="numberPlacesWanted" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SearchTrainResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="train" type="tns:Train"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="MakeReservationsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="reservationSingle" type="tns:MakeReservationsRequestSingle"/>
+                <xs:element name="JWTtoken" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="MakeReservationsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetReservationsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="JWTtoken" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetReservationsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="reservation" type="tns:Reservation"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteReservationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="idReservation" type="xs:string"/>
+                <xs:element name="JWTtoken" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteReservationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="Train">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="departure" type="xs:string"/>
+            <xs:element name="arrival" type="xs:string"/>
+            <xs:element name="departureDate" type="xs:dateTime"/>
+            <xs:element name="isFlexible" type="xs:boolean"/>
+            <xs:element name="classe" type="tns:Classe"/>
+            <xs:element name="numberPlacesAvailable" type="xs:int"/>
+            <xs:element name="company" type="tns:Company"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Reservation">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="train" type="tns:Train"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MakeReservationsRequestSingle">
+        <xs:sequence>
+            <xs:element name="idTrain" type="xs:string"/>
+            <xs:element name="company" type="tns:Company"/>
+            <xs:element name="classe" type="tns:Classe"/>
+            <xs:element name="numberPlaces" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="Classe">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="STANDARD"/>
+            <xs:enumeration value="FIRST"/>
+            <xs:enumeration value="BUSINESS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Company">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SNCF"/>
+            <xs:enumeration value="LA RENFE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
